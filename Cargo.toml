@@ -1,4 +1,6 @@
 [workspace]
 
-members = ["frontend"]
-resolver = "2"
+members = [
+    "common",
+    "back_end",
+]
