@@ -1,3 +1,11 @@
+<script>
+	let playlistId = "";
+
+	function handleSubmit() {
+		alert("I'm going to search spotify for this playlist: " + playlistId);
+	}
+</script>
+
 <div id="banner">
 	<header class="dark-bg">
 		<h1>Musicalendar.</h1>
@@ -9,13 +17,22 @@
 </div>
 
 <section id="action-buttons">
-	<button disabled class="action-button"
-		>Select with your account (not yet...)</button
-	>
+	<button disabled class="action-button">
+		Select with your account (coming soon)
+	</button>
 	<p>or</p>
-	<form>
-		<input class="playlist-input" placeholder="Paste link to a playlist" />
-		<input class="action-button" type="submit" value="Go" />
+	<form on:submit|preventDefault={handleSubmit}>
+		<input
+			class="playlist-input"
+			bind:value={playlistId}
+			placeholder="Paste link to a playlist"
+		/>
+		<input
+			disabled={!playlistId}
+			class="action-button"
+			type="submit"
+			value="Go"
+		/>
 	</form>
 </section>
 
@@ -90,10 +107,13 @@
 		border-radius: 5px;
 		color: white;
 		background-color: #1db954;
-		cursor: pointer;
 	}
-	#action-buttons button:hover {
+	.action-button:not([disabled]):hover {
+		cursor: pointer;
 		background-color: #007700; /* Darker green on hover */
+	}
+	.action-button[disabled] {
+		background-color: #004400;
 	}
 
 	#action-buttons p {
