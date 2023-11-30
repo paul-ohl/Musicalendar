@@ -1,5 +1,6 @@
 <script>
-	import ActionButtons from "../components/ActionButtons.svelte";
+	import ActionButtons from "../components/welcomepage/ActionButtons.svelte";
+	import MoreInfo from "../components/welcomepage/MoreInfo.svelte";
 </script>
 
 <div class="parallax">
@@ -10,9 +11,11 @@
 			Explore your playlist's journey with Musicalendar.
 		</h2>
 
-		<ActionButtons />
+		<ActionButtons on:playlist-link />
 	</header>
 </div>
+
+<MoreInfo />
 
 <style>
 	.green-elt {
@@ -43,5 +46,10 @@
 	header h2 {
 		font-size: 1.33rem;
 		font-weight: 600;
+	}
+	@media (max-width: 600px) {
+		header h1 {
+			font-size: 2.55rem;
+		}
 	}
 </style>

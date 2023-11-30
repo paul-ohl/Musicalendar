@@ -1,6 +1,4 @@
 [workspace]
+resolver = "2"
+members = ["common", "back_end"]
 
-members = [
-    "common",
-    "back_end",
-]

@@ -1,8 +1,13 @@
 <script>
+	import { createEventDispatcher } from "svelte";
+
 	let playlistId = "";
+	const dispatch = createEventDispatcher();
 
 	function handleSubmit() {
-		alert("I'm going to search spotify for this playlist: " + playlistId);
+		dispatch("playlist-link", {
+			link: playlistId,
+		});
 	}
 </script>
 
@@ -32,36 +37,51 @@
 		flex-flow: column;
 	}
 
-	.account-container {
-		margin: 30px;
-	}
-
-	.account {
-		border-radius: 25px;
-		text-decoration-line: none;
-	}
 	p {
 		margin: 0 15px;
 	}
 
+	form {
+		display: flex;
+		flex-flow: row;
+		max-width: 640px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
 	.playlist-input {
 		border-radius: 25px 0 0 25px;
+		width: 75%;
 	}
 	.playlist-submit {
 		border-radius: 0 25px 25px 0;
-		padding: 20px;
+		width: 15%;
 	}
 
-	.account,
 	input,
 	p {
 		font-size: 1.66rem;
 		font-weight: 600;
 	}
-	.account,
 	.playlist-input {
 		color: #222;
 		background-color: #fff;
 		padding: 20px;
+	}
+
+	.account-container {
+		max-width: 400px;
+		margin: 0 auto;
+		background-color: white;
+		border-radius: 25px;
+		padding: 20px;
+	}
+
+	.account {
+		display: inline-block;
+		font-size: 1.66rem;
+		text-decoration: none;
+		color: #333;
+		word-wrap: break-word;
 	}
 </style>
