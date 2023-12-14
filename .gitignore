@@ -1,2 +1,9 @@
+# from rust
+Cargo.lock
 /target
-dist/
+./back_end/target/
+
+# from svelte
+/front_end/node_modules
+/front_end/dist/
+/front_end/package-lock.json
