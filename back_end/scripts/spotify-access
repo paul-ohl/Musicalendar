@@ -1,0 +1,7 @@
+#!/bin/sh
+# Date: 2023/12/02
+# Description: 
+
+curl -X POST "https://accounts.spotify.com/api/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials&client_id=4779c329d87d40e2b958d51d413e19c6&client_secret=f2e2fd71ca374704a4b1586099171b5f"
