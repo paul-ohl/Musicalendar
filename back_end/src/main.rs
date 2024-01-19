@@ -1,19 +1,16 @@
 #![warn(clippy::pedantic)]
-#![allow(unused)]
+// #![allow(unused)]
 
-use api_key::ApiKey;
 use axum::Router;
 use std::net::SocketAddr;
 use tracing::log::warn;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod api_key;
 mod domain;
 mod routes;
 mod services;
 
 // SETUP Constants
-const FRONT_PUBLIC: &str = "./front_end/dist";
 const SERVER_PORT: &str = "4321";
 const SERVER_HOST: &str = "0.0.0.0";
 
@@ -27,15 +24,13 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let app = Router::new()
-        .merge(services::frontend())
-        .merge(services::backend());
+    let app = Router::new().merge(services::backend());
 
     let (port, host) = (SERVER_PORT, SERVER_HOST);
 
     let addr: SocketAddr = format!("{host}:{port}")
         .parse()
-        .expect("Can not parse address and port");
+        .expect("Cannot parse address and port");
 
     tracing::info!("listening on http://{}", addr);
 
