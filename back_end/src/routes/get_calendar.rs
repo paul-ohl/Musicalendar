@@ -1,37 +1,45 @@
-use axum::extract::{Query, State};
+use anyhow::Result;
+use axum::{extract::State, Form};
 use serde::Deserialize;
-use serde_json::{json, Value};
-// use serde_json::{json, Value};
+use serde_json::Value;
+use std::{convert::Into, sync::Arc};
+use tracing::instrument;
 
-use crate::domain::{ApiKey, PlaylistId};
+use crate::domain::{ApiKey, Calendar, MusicalendarError, PlaylistId};
 
 #[derive(Debug, Deserialize)]
 pub struct Params {
     playlist_link: String,
 }
 
-pub async fn get_calendar(State(api_key): State<ApiKey>, Query(params): Query<Params>) -> String {
-    if let Ok(id) = PlaylistId::parse(&params.playlist_link) {
-        spotify_get_from_link(api_key, id).await.to_string()
-    } else {
-        String::from("Could not find playlist from this id")
-    }
+/// # Errors
+/// Will return an error if any of the subfunctions fail, meaning:
+/// - The playlist link is invalid
+/// - The playlist data is not in the correct json format
+pub async fn get_calendar(
+    State(api_key): State<Arc<ApiKey>>,
+    Form(params): Form<Params>,
+) -> Result<String, MusicalendarError> {
+    let id = PlaylistId::parse(&params.playlist_link)?;
+    calendar_from_id(api_key, id).await.map_err(Into::into)
 }
 
-async fn spotify_get_from_link(api_key: ApiKey, playlist_id: PlaylistId) -> Value {
-    let spotify_token = api_key.get_key().await;
+#[instrument]
+async fn calendar_from_id(api_key: Arc<ApiKey>, playlist_id: PlaylistId) -> Result<String> {
+    let spotify_token = api_key.get_key().await?;
     let client = reqwest::Client::new();
 
-    let request = client
+    let response = client
         .get(format!(
             "https://api.spotify.com/v1/playlists/{}/tracks",
             playlist_id.as_ref()
         ))
         .header("Authorization", format!("Bearer {spotify_token}"))
         .send()
-        .await;
-    match request {
-        Ok(response) => response.json::<serde_json::Value>().await.unwrap(),
-        Err(e) => json!({"result": "failed", "reason": e.to_string()}),
-    }
+        .await?;
+    let playlist = response.json::<Value>().await?;
+
+    let calendar = Calendar::parse(&playlist)?;
+
+    serde_json::to_string(&calendar).map_err(Into::into)
 }

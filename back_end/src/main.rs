@@ -1,18 +1,7 @@
-#![warn(clippy::pedantic)]
-// #![allow(unused)]
+use musicalendar::startup::{app, settings};
 
-use axum::Router;
 use std::net::SocketAddr;
-use tracing::log::warn;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-mod domain;
-mod routes;
-mod services;
-
-// SETUP Constants
-const SERVER_PORT: &str = "4321";
-const SERVER_HOST: &str = "0.0.0.0";
 
 #[tokio::main]
 async fn main() {
@@ -24,16 +13,17 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let app = Router::new().merge(services::backend());
-
-    let (port, host) = (SERVER_PORT, SERVER_HOST);
-
-    let addr: SocketAddr = format!("{host}:{port}")
+    let settings = settings::build();
+    let addr: SocketAddr = format!("{}:{}", &settings.host, &settings.port)
         .parse()
         .expect("Cannot parse address and port");
-
     tracing::info!("listening on http://{}", addr);
+    let app = app(settings);
 
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .expect("Failed to bind port");
+    axum::serve(listener, app)
+        .await
+        .expect("Failed to start server");
 }
